@@ -509,6 +509,9 @@ int phy_init(void)
 #ifdef CONFIG_PHY_MARVELL
 	phy_marvell_init();
 #endif
+#ifdef CONFIG_PHY_MARVELL_88Q2122
+	phy_marvell_88q2122_init();
+#endif
 #ifdef CONFIG_PHY_MICREL_KSZ8XXX
 	phy_micrel_ksz8xxx_init();
 #endif

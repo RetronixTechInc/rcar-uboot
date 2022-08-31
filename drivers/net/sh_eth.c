@@ -63,6 +63,36 @@
 
 #define TIMEOUT_CNT 1000
 
+static int bb_miiphy_read_c45(struct mii_dev *miidev, int addr, int devad, int regnum)
+{
+	if (devad > 0)
+	{
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, devad);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA, regnum);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, (devad | MII_MMD_CTRL_NOINCR));
+		return bb_miiphy_read( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA);
+	}
+	else
+	{
+		return bb_miiphy_read( miidev, addr, devad, regnum);
+	}
+}
+
+static int bb_miiphy_write_c45(struct mii_dev *miidev, int addr, int devad, int regnum, u16 value)
+{
+	if (devad > 0)
+	{
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, devad);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA, regnum);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, (devad | MII_MMD_CTRL_NOINCR));
+		return bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA, value);
+	}
+	else
+	{
+		return bb_miiphy_write( miidev, addr, devad, regnum, value);
+	}
+}
+
 static int sh_eth_send_common(struct sh_eth_dev *eth, void *packet, int len)
 {
 	int ret = 0, timeout;
@@ -846,8 +876,10 @@ static int sh_ether_probe(struct udevice *udev)
 		return ret;
 	}
 
-	mdiodev->read = bb_miiphy_read;
-	mdiodev->write = bb_miiphy_write;
+//	mdiodev->read = bb_miiphy_read;
+//	mdiodev->write = bb_miiphy_write;
+	mdiodev->read = bb_miiphy_read_c45;
+	mdiodev->write = bb_miiphy_write_c45;
 	bb_miiphy_buses[0].priv = eth;
 	snprintf(mdiodev->name, sizeof(mdiodev->name), udev->name);
 

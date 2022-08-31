@@ -134,6 +134,12 @@ config PHY_LXT
 config PHY_MARVELL
 	bool "Marvell Ethernet PHYs support"
 
+config PHY_MARVELL_88Q2122
+	bool "Marvell 88Q2122 Ethernet PHYs support"
+	help
+	  Support for the Marvell 88Q2122 Ethernet
+	  Transceiver.
+
 config PHY_MESON_GXL
 	bool "Amlogic Meson GXL Internal PHY support"
 
