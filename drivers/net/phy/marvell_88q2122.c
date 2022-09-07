@@ -15,38 +15,6 @@
 #include <micrel.h>
 #include <phy.h>
 
-#if 0
-/*
- * KSZ9021 - KSZ9031 common
- */
-
-#define MII_KSZ90xx_PHY_CTL		0x1f
-#define MIIM_KSZ90xx_PHYCTL_1000	(1 << 6)
-#define MIIM_KSZ90xx_PHYCTL_100		(1 << 5)
-#define MIIM_KSZ90xx_PHYCTL_10		(1 << 4)
-#define MIIM_KSZ90xx_PHYCTL_DUPLEX	(1 << 3)
-
-/* KSZ9021 PHY Registers */
-#define MII_KSZ9021_EXTENDED_CTRL	0x0b
-#define MII_KSZ9021_EXTENDED_DATAW	0x0c
-#define MII_KSZ9021_EXTENDED_DATAR	0x0d
-
-#define CTRL1000_PREFER_MASTER		(1 << 10)
-#define CTRL1000_CONFIG_MASTER		(1 << 11)
-#define CTRL1000_MANUAL_CONFIG		(1 << 12)
-
-#define KSZ9021_PS_TO_REG		120
-
-/* KSZ9031 PHY Registers */
-#define MII_KSZ9031_MMD_ACCES_CTRL	0x0d
-#define MII_KSZ9031_MMD_REG_DATA	0x0e
-
-#define KSZ9031_PS_TO_REG		60
-#endif
-
-//#define MMD_ACCESS_CONTROL	0xd
-//#define MMD_ACCESS_REG_DATA	0xe
-
 #define msleep(a) udelay(a * 1000)
 
 #define REGISTER13_ADDR		0x0d
@@ -141,12 +109,12 @@ static void setMasterSlave(struct phy_device *phydev, bool forceMaster)
 
 	if (forceMaster)
 	{
-		printf("Marvell m88Q2122Set Master\n");
+		printf("Marvell m88Q2122 Set Master ; ");
 		regData |= 0x4000;
 	}
 	else
 	{
-		printf("Marvell m88Q2122Set Slave\n");
+		printf("Marvell m88Q2122 Set Slave ; ");
 		regData &= 0xBFFF;
 	}
 
@@ -176,7 +144,7 @@ static bool isMaster(struct phy_device *phydev)
 // @return void
 static void softReset(struct phy_device *phydev)
 {
-	printf("Marvell m88Q2122 SoftReset\n");
+//	printf("SoftReset ");
 	int regData = regRead(phydev, 1, 0x0000);
 
 	regData |= 1 << 11;
@@ -208,7 +176,7 @@ static int m88Q2122_init(struct phy_device *phydev)
 
 	setMasterSlave(phydev, 1);
 
-	printf("Marvell m88Q2122_config_init!\n");
+	printf("config init ... ");
 
 	msleep(200);
 	regWrite(phydev, 1, 0x0900, 0x4000);
@@ -290,7 +258,7 @@ static int m88Q2122_init(struct phy_device *phydev)
 	}
 
 	softReset(phydev);
-
+	printf("End \n");
 	return 0;
 }
 

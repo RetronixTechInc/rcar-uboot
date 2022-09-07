@@ -63,7 +63,7 @@
 
 #define TIMEOUT_CNT 1000
 
-static int bb_miiphy_read_c45(struct mii_dev *miidev, int addr, int devad, int regnum)
+static int sh_eth_bb_miiphy_read(struct mii_dev *miidev, int addr, int devad, int regnum)
 {
 	if (devad > 0)
 	{
@@ -78,7 +78,7 @@ static int bb_miiphy_read_c45(struct mii_dev *miidev, int addr, int devad, int r
 	}
 }
 
-static int bb_miiphy_write_c45(struct mii_dev *miidev, int addr, int devad, int regnum, u16 value)
+static int sh_eth_bb_miiphy_write(struct mii_dev *miidev, int addr, int devad, int regnum, u16 value)
 {
 	if (devad > 0)
 	{
@@ -876,10 +876,8 @@ static int sh_ether_probe(struct udevice *udev)
 		return ret;
 	}
 
-//	mdiodev->read = bb_miiphy_read;
-//	mdiodev->write = bb_miiphy_write;
-	mdiodev->read = bb_miiphy_read_c45;
-	mdiodev->write = bb_miiphy_write_c45;
+	mdiodev->read = sh_eth_bb_miiphy_read;
+	mdiodev->write = sh_eth_bb_miiphy_write;
 	bb_miiphy_buses[0].priv = eth;
 	snprintf(mdiodev->name, sizeof(mdiodev->name), udev->name);
 

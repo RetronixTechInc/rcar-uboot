@@ -20,6 +20,9 @@
 #include <asm/io.h>
 #include <asm/gpio.h>
 
+/* Config */
+#define CONFIG_RAVB_PHY_ADDR	0x3
+
 /* Registers */
 #define RAVB_REG_CCC		0x000
 #define RAVB_REG_DBAT		0x004
@@ -127,6 +130,36 @@ struct ravb_priv {
 	struct clk		clk;
 	struct gpio_desc	reset_gpio;
 };
+
+static int ravb_bb_miiphy_read(struct mii_dev *miidev, int addr, int devad, int regnum)
+{
+	if (devad > 0)
+	{
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, devad);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA, regnum);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, (devad | MII_MMD_CTRL_NOINCR));
+		return bb_miiphy_read( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA);
+	}
+	else
+	{
+		return bb_miiphy_read( miidev, addr, devad, regnum);
+	}
+}
+
+static int ravb_bb_miiphy_write(struct mii_dev *miidev, int addr, int devad, int regnum, u16 value)
+{
+	if (devad > 0)
+	{
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, devad);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA, regnum);
+		bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_CTRL, (devad | MII_MMD_CTRL_NOINCR));
+		return bb_miiphy_write( miidev, addr, MDIO_DEVAD_NONE, MII_MMD_DATA, value);
+	}
+	else
+	{
+		return bb_miiphy_write( miidev, addr, devad, regnum, value);
+	}
+}
 
 static inline void ravb_flush_dcache(u32 addr, u32 len)
 {
@@ -313,7 +346,7 @@ static int ravb_phy_config(struct udevice *dev)
 		mdelay(1);
 	}
 
-	phydev = phy_connect(eth->bus, 0, dev, pdata->phy_interface);
+	phydev = phy_connect(eth->bus, CONFIG_RAVB_PHY_ADDR, dev, pdata->phy_interface);
 	if (!phydev)
 		return -ENODEV;
 
@@ -499,8 +532,8 @@ static int ravb_probe(struct udevice *dev)
 		goto err_mdio_alloc;
 	}
 
-	mdiodev->read = bb_miiphy_read;
-	mdiodev->write = bb_miiphy_write;
+	mdiodev->read = ravb_bb_miiphy_read;
+	mdiodev->write = ravb_bb_miiphy_write;
 	bb_miiphy_buses[0].priv = eth;
 	snprintf(mdiodev->name, sizeof(mdiodev->name), dev->name);
 
