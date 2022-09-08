@@ -174,7 +174,25 @@ static int m88Q2122_init(struct phy_device *phydev)
 {
 	int regData = 0;
 
-	setMasterSlave(phydev, 1);
+	char *eth_type = NULL;
+	ulong ulMaster = 0;
+
+	if (env_get("eth_type"))
+	{
+		eth_type = env_get("eth_type");
+	}
+
+	//bit0: gether, bit1: ravb
+	//0: Slave:Slave, 1: Slave:Master, 2: Master:Slave, 3: Master:Master
+	ulMaster = env_get_hex("geth_ms", 3);
+	if (0 == strcmp("gether", eth_type))
+	{
+		setMasterSlave(phydev, ulMaster & 0x01);
+	}
+	else
+	{
+		setMasterSlave(phydev, (ulMaster >> 1) & 0x01);
+	}
 
 	printf("config init ... ");
 
