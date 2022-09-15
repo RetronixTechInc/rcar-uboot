@@ -40,7 +40,8 @@
 #define DRAM_RSV_SIZE			0x08000000
 #define CONFIG_SYS_SDRAM_BASE		(0x40000000 + DRAM_RSV_SIZE)
 #define CONFIG_SYS_SDRAM_SIZE		(0x80000000u - DRAM_RSV_SIZE)
-#define CONFIG_SYS_LOAD_ADDR		0x58000000
+//#define CONFIG_SYS_LOAD_ADDR		0x58000000
+#define CONFIG_SYS_LOAD_ADDR		0x48080000
 #define CONFIG_LOADADDR			CONFIG_SYS_LOAD_ADDR
 #define CONFIG_VERY_BIG_RAM
 #define CONFIG_MAX_MEM_MAPPED		(0x80000000u - DRAM_RSV_SIZE)
@@ -56,14 +57,32 @@
 /* ENV setting */
 #define CONFIG_ENV_OVERWRITE
 
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"usb_pgood_delay=2000\0"	\
+//#define CONFIG_IPADDR			10.0.0.242
+
+#define CONFIG_EXTRA_ENV_SETTINGS					\
+	"bootargs_ram=setenv bootargs root=/dev/ram0 rdinit=/sbin/init eth_type=${eth_type} geth_ms=${geth_ms}\0"					\
+	"bootargs_sys_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${nfs_server}:/export/rfs ip=dhcp cma=560M nfsvers=3 ov10635.dvp_order=1 eth_type=${eth_type} geth_ms=${geth_ms}\0"		\
+	"bootargs_sys_p2=setenv bootargs init=/sbin/init root=/dev/mmcblk0p2 rootwait rw ov10635.dvp_order=1 eth_type=${eth_type} geth_ms=${geth_ms}\0"	\
+	"bootcmd_ram=run bootargs_ram storage r_kernel r_dtb r_ramdisk;booti ${loadaddr} ${rd_loadaddr} ${dtb_loadaddr}\0"				\
+	"bootcmd_nfs=run bootargs_sys_nfs load_mmc_p0; booti ${loadaddr} - ${dtb_loadaddr}\0"								\
+	"bootcmd_mmc=run bootargs_sys_p2 load_mmc_p1; booti ${loadaddr} - ${dtb_loadaddr}\0"								\
+	"load_mmc_p0=run storage r_kernel r_dtb\0"			\
+	"load_mmc_p1=run storage; ext4load mmc 0:1 ${loadaddr} Image; ext4load mmc 0:1 ${dtb_loadaddr} r8a77980-es2-condor.dtb\0"			\
+	"load_mmc_tftp=tftp ${loadaddr} Image;tftp ${dtb_loadaddr} r8a77980-es2-condor.dtb\0"								\
+	"r_dtb=mmc read ${dtb_loadaddr} 0x6400 0x400\0"			\
+	"r_kernel=mmc read ${loadaddr} 0x6800 0xF000\0"			\
+	"r_ramdisk=mmc read ${rd_loadaddr} 0x18800 0x8000\0"		\
+	"dtb_loadaddr=0x48000000\0"					\
+	"rd_loadaddr=0x52000000\0"					\
+	"eth_type=avb\0"						\
+	"geth_ms=2\0"							\
+	"platform=r8a77980\0"						\
+	"storage=mmc dev 0\0"						\
+	"usb_pgood_delay=2000\0"					\
 	"bootm_size=0x10000000\0"
 
 #define CONFIG_BOOTCOMMAND	\
-	"tftp 0x48080000 Image; " \
-	"tftp 0x48000000 Image-"CONFIG_DEFAULT_FDT_FILE"; " \
-	"booti 0x48080000 - 0x48000000"
+	"run bootcmd_ram"
 
 /* SPL support */
 #if defined(CONFIG_R8A7795) || defined(CONFIG_R8A7796) || defined(CONFIG_R8A77965)

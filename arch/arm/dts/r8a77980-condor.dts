@@ -127,11 +127,11 @@
 	pinctrl-names = "default";
 
 	phy-mode = "rgmii";
-	phy-handle = <&avb_phy0>;
+	phy-handle = <&phy0>;
 	renesas,no-ether-link;
 	status = "okay";
 
-	avb_phy0: eavb-phy@3 {
+	phy0: eavb-phy@3 {
 		reg = <3>;
 		interrupt-parent = <&gpio1>;
 		interrupts = <17 IRQ_TYPE_LEVEL_LOW>;
@@ -144,11 +144,11 @@
 	pinctrl-names = "default";
 
 	phy-mode = "rgmii";
-	phy-handle = <&phy0>;
+	phy-handle = <&phy1>;
 	renesas,no-ether-link;
 	status = "okay";
 
-	phy0: ethernet-phy@3 {
+	phy1: ethernet-phy@3 {
 		reg = <3>;
 		interrupt-parent = <&gpio4>;
 		interrupts = <23 IRQ_TYPE_LEVEL_LOW>;
