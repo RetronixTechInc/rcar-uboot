@@ -28,12 +28,6 @@
 
 static int m88q2122_startup(struct phy_device *phydev)
 {
-//	int ret;
-
-//	ret = genphy_update_link(phydev);
-//	if (ret)
-//		return ret;
-
 	phydev->duplex = DUPLEX_FULL;
 	phydev->speed = SPEED_1000;
 	phydev->pause = 0;
@@ -58,9 +52,13 @@ int m88q2122_phy_extended_write(struct phy_device *phydev, int devaddr, int regn
 
 int m88q2122_phy_extended_read(struct phy_device *phydev, int devaddr, int regnum, u16 mode)
 {
+	/*select register addr for mmd*/
 	phy_write(phydev, MDIO_DEVAD_NONE, REGISTER13_ADDR, devaddr);
+	/*select register for mmd*/
 	phy_write(phydev, MDIO_DEVAD_NONE, REGISTER14_ADDR, regnum);
-	phy_write(phydev, MDIO_DEVAD_NONE, REGISTER13_ADDR, (devaddr | mode));
+	/*setup mode*/
+	phy_write(phydev, MDIO_DEVAD_NONE, REGISTER13_ADDR, (mode | devaddr));
+	/*read the value*/
 	return phy_read(phydev, MDIO_DEVAD_NONE, REGISTER14_ADDR);
 }
 
@@ -81,8 +79,7 @@ static int m88q2122_phy_extwrite(struct phy_device *phydev, int addr, int devadd
 // @param regnum register address within section
 // @param val 16-bit to write into register
 // @return void
-//static void regWrite ( uint16_t phydev, uint16_t devAddr, uint16_t regAddr, uint16_t data );
-static void regWrite ( struct phy_device *phydev, u16 devAddr, u16 regnum, u16 val )
+static void regWrite ( struct phy_device *phydev, int devAddr, int regnum, u16 val )
 {
 	return m88q2122_phy_extended_write(phydev, devAddr, regnum, DEVADDR_OFFSET, val);
 }
@@ -92,8 +89,7 @@ static void regWrite ( struct phy_device *phydev, u16 devAddr, u16 regnum, u16 v
 // @param devAddr section of register map (Ex: 0x07 : Auto-Neg registers)
 // @param regnum register address within section
 // @return value in register if successful
-//static int regRead ( uint16_t phydev, uint16_t devAddr, uint16_t regAddr );
-static int regRead ( struct phy_device *phydev, u16 devAddr, u16 regnum )
+static int regRead ( struct phy_device *phydev, int devAddr, int regnum )
 {
 	return m88q2122_phy_extended_read(phydev, devAddr, regnum, DEVADDR_OFFSET);
 }
@@ -102,9 +98,10 @@ static int regRead ( struct phy_device *phydev, u16 devAddr, u16 regnum )
 // @param phydev bootstrap address of the PHY
 // @param forceMaster
 // @return void
-static void setMasterSlave(struct phy_device *phydev, bool forceMaster)
+static void m88Q2122_setMasterSlave(struct phy_device *phydev, bool forceMaster)
 {
 	u16 regData = 0;
+
 	regData = regRead(phydev, 1, 0x0834);
 
 	if (forceMaster)
@@ -134,7 +131,7 @@ static void setMasterSlave(struct phy_device *phydev, bool forceMaster)
 // Check current master/slave setting
 // @param phydev address of the PHY
 // @return true if master, false if slave
-static bool isMaster(struct phy_device *phydev)
+static bool m88Q2122_isMaster(struct phy_device *phydev)
 {
 	return (0x0 != (regRead(phydev, 7, 0x8001) & 0x4000));
 }
@@ -142,10 +139,11 @@ static bool isMaster(struct phy_device *phydev)
 // Software Reset procedure
 // @param phydev address of the PHY
 // @return void
-static void softReset(struct phy_device *phydev)
+static void m88Q2122_softReset(struct phy_device *phydev)
 {
-//	printf("SoftReset ");
-	int regData = regRead(phydev, 1, 0x0000);
+	u16 regData = 0;
+
+	regData = regRead(phydev, 1, 0x0000);
 
 	regData |= 1 << 11;
 	regWrite(phydev, 1, 0x0000, regData);
@@ -172,26 +170,25 @@ static void softReset(struct phy_device *phydev)
 // @return void
 static int m88Q2122_init(struct phy_device *phydev)
 {
-	int regData = 0;
-
-	char *eth_type = NULL;
+	u16 regData = 0;
+	char *cEthType = NULL;
 	ulong ulMaster = 0;
 
 	if (env_get("eth_type"))
 	{
-		eth_type = env_get("eth_type");
+		cEthType = env_get("eth_type");
 	}
 
 	//bit0: gether, bit1: ravb
 	//0: Slave:Slave, 1: Slave:Master, 2: Master:Slave, 3: Master:Master
 	ulMaster = env_get_hex("geth_ms", 3);
-	if (0 == strcmp("gether", eth_type))
+	if (0 == strcmp("gether", cEthType))
 	{
-		setMasterSlave(phydev, ulMaster & 0x01);
+		m88Q2122_setMasterSlave(phydev, ulMaster & 0x01);
 	}
 	else
 	{
-		setMasterSlave(phydev, (ulMaster >> 1) & 0x01);
+		m88Q2122_setMasterSlave(phydev, (ulMaster >> 1) & 0x01);
 	}
 
 	printf("config init ... ");
@@ -244,7 +241,7 @@ static int m88Q2122_init(struct phy_device *phydev)
 	regWrite(phydev, 3, 0xFC13, 0x0010);
 	//LPSD feature
 	if (MRVL_Q212X_LPSD_FEATURE_ENABLE){
-		if (isMaster(phydev)){
+		if (m88Q2122_isMaster(phydev)){
 			regWrite(phydev, 7, 0x8032, 0x005A);
 		}
 		else{
@@ -275,16 +272,15 @@ static int m88Q2122_init(struct phy_device *phydev)
 		regWrite(phydev, 3, 0xFE04, 0x0008);
 	}
 
-	softReset(phydev);
+	m88Q2122_softReset(phydev);
 	printf("End \n");
+
 	return 0;
 }
 
 
 static int m88q2122_config(struct phy_device *phydev)
 {
-	int ret;
-
 	m88Q2122_init(phydev);
 
 	return genphy_config(phydev);
@@ -292,8 +288,8 @@ static int m88q2122_config(struct phy_device *phydev)
 
 static struct phy_driver m88q2122_driver = {
 	.name = "Marvell 88q2122",
-	.uid  = 0x002B0980,
-	.mask = 0xfffffff0,
+	.uid  = MARVELL_PHY_ID_88Q2122,
+	.mask = MARVELL_PHY_ID_88Q2122_MASK,
 	.features = PHY_GBIT_FEATURES,
 	.config   = &m88q2122_config,
 	.startup  = &m88q2122_startup,
