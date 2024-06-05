@@ -6,7 +6,4 @@
  */
 
 #include "r8a779g0-raptor.dts"
-#include "r8a779g0-u-boot.dtsi"
-
-
 
