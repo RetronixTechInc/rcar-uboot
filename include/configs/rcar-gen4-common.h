@@ -51,8 +51,24 @@
 	"bootm_size=0x10000000\0"
 
 #define CONFIG_BOOTCOMMAND	\
-	"tftp 0x48080000 Image; " \
-	"tftp 0x48000000 Image-"CONFIG_DEFAULT_FDT_FILE"; " \
-	"booti 0x48080000 - 0x48000000"
+	"run bootcmd_emmc"
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+    "ipaddr=192.168.0.20\0" \
+    "serverip=192.168.0.1\0" \
+    "serverfold=/export/rfs\0" \
+    "tftp_kernel=tftp ${loadaddr} ${file_kernel}\0" \
+    "tftp_dtb=tftp ${loadaddr_dtb} ${file_dtb}\0" \
+    "bootcmd_nfs=run bootargs_nfs;run tftp_kernel;run tftp_dtb;booti ${loadaddr} - ${loadaddr_dtb}\0" \
+    "bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=750M,clk_ignore_unused\0" \
+    "emmc_part=2\0" \
+    "bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p${emmc_part} rootfstype=ext4 rootwait\0" \
+    "emmc_kernel=ext4load mmc 0:${emmc_part} ${loadaddr} ${file_kernel}\0" \
+    "emmc_dtb=ext4load mmc 0:${emmc_part} ${loadaddr_dtb} ${file_dtb}\0" \
+    "bootcmd_emmc=run bootargs_mmc;run emmc_kernel;run emmc_dtb;booti ${loadaddr} - ${loadaddr_dtb}" \
+    "loadaddr=0x48080000\0" \
+    "file_kernel=/boot/Image\0" \
+    "loadaddr_dtb=0x48000000\0" \
+    "file_dtb=/boot/r8a779g0-raptor.dtb\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
