@@ -54,22 +54,24 @@
 	"run bootcmd_emmc"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-    "ipaddr=192.168.0.20\0" \
-    "serverip=192.168.0.1\0" \
-    "serverfold=/export/rfs\0" \
-    "tftp_kernel=tftp ${loadaddr} ${file_kernel}\0" \
-    "tftp_dtb=tftp ${loadaddr_dtb} ${file_dtb}\0" \
-    "bootcmd_nfs=run bootargs_nfs;run tftp_kernel;run tftp_dtb;booti ${loadaddr} - ${loadaddr_dtb}\0" \
-    "bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused\0" \
-    "emmc_part=2\0" \
-    "bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p${emmc_part} rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused\0" \
-    "emmc_kernel=ext4load mmc 0:${emmc_part} ${loadaddr} ${file_kernel}\0" \
-    "emmc_dtb=ext4load mmc 0:${emmc_part} ${loadaddr_dtb} ${file_dtb}\0" \
-    "bootcmd_emmc=run bootargs_mmc;run emmc_kernel;run emmc_dtb;booti ${loadaddr} - ${loadaddr_dtb}" \
     "loadaddr=0x48080000\0" \
     "file_kernel=/boot/Image\0" \
     "loadaddr_dtb=0x48000000\0" \
     "file_dtb=/boot/r8a779g0-raptor.dtb\0" \
+    "loadaddr_dtbo=0x48060000\0" \
+    "dtbo_pcie=/boot/r8a779g0-raptor-overlay-pcie1x4.dtb\0" \
+    "pcie_check=if gpio input 0; then echo pcie2x2; else echo pcie1x4;run pcie1x4;fi\0" \
+    "pcie1x4=fdt addr ${loadaddr_dtb};fdt resize 8192;${loadcmd} ${loadaddr_dtbo} ${dtbo_pcie};fdt apply ${loadaddr_dtbo}\0" \
+    "load_kernel=${loadcmd} ${loadaddr} ${file_kernel};${loadcmd} ${loadaddr_dtb} ${file_dtb}\0" \                   
+    "ipaddr=192.168.0.20\0" \
+    "serverip=192.168.0.1\0" \
+    "serverfold=/export/rfs\0" \
+    "bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused\0" \
+    "load_tftp=setenv loadcmd tftp\0" \
+    "bootcmd_nfs=run bootargs_nfs;run load_tftp;run load_kernel;run pcie_check;booti ${loadaddr} - ${loadaddr_dtb}\0" \
+    "bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused\0" \
+    "load_emmc=setenv loadcmd ext4load mmc 0:2\0" \
+    "bootcmd_emmc=run bootargs_mmc;run load_emmc;run load_kernel;run pcie_check;booti ${loadaddr} - ${loadaddr_dtb}\0" \
     "cma_size=900M\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
