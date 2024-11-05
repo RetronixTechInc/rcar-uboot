@@ -1,0 +1,15 @@
+if TARGET_HEL
+
+config SYS_SOC
+	default "rmobile"
+
+config SYS_BOARD
+	default "hel"
+
+config SYS_VENDOR
+	default "renesas"
+
+config SYS_CONFIG_NAME
+	default "hel"
+
+endif
