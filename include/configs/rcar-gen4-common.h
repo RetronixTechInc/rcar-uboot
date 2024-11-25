@@ -71,8 +71,8 @@
     "dsi_mem1_get=0x4D000003\0" \
     "dsi_out0=if test X${dsi_0} = XSERDES ;then setenv dsi_set0 1;mw.b ${dsi_mem0_get} 1 1;else setenv dsi_set0 0;mw.b ${dsi_mem0_get} 0 1;fi;mw.b ${dsi_mem0_chk} 0 1;\0" \
     "dsi_out1=if test X${dsi_1} = XSERDES ;then setenv dsi_set1 1;mw.b ${dsi_mem1_get} 1 1;else setenv dsi_set1 0;mw.b ${dsi_mem1_get} 0 1;fi;mw.b ${dsi_mem1_chk} 0 1;\0" \
-    "dsi_i2c_set=i2c dev 4;i2c mw 0x60 0x11.1 ${dsi_set0} 1;i2c mw 0x60 0x12.1 ${dsi_set1} 1\0" \
-    "dsi_i2c_get=i2c dev 4;i2c read 0x60 0x13.1 1 ${dsi_mem0_get};i2c read 0x60 0x14.1 1 ${dsi_mem1_get}\0" \
+    "dsi_i2c_get=i2c dev 4;i2c read 0x60 0x11.1 1 ${dsi_mem0_get};i2c read 0x60 0x12.1 1 ${dsi_mem1_get}\0" \
+    "dsi_i2c_set=i2c dev 4;i2c mw 0x60 0x13.1 ${dsi_set0} 1;i2c mw 0x60 0x14.1 ${dsi_set1} 1\0" \
     "dsi_gpio_get=if gpio input 0; then mw.b ${dsi_mem0_get} 0 1;mw.b ${dsi_mem1_get} 0 1; else mw.b ${dsi_mem0_get} 1 1;mw.b ${dsi_mem1_get} 1 1;fi\0" \
     "dsi_dtbo0_7=/boot/r8a779g0-raptor-overlay-dsi0-7.dtb\0" \
     "dsi_dtbo0_10=/boot/r8a779g0-raptor-overlay-dsi0-10.dtb\0" \
