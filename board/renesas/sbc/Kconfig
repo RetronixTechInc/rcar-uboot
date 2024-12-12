@@ -1,0 +1,15 @@
+if TARGET_SBC
+
+config SYS_SOC
+	default "rmobile"
+
+config SYS_BOARD
+	default "sbc"
+
+config SYS_VENDOR
+	default "renesas"
+
+config SYS_CONFIG_NAME
+	default "sbc"
+
+endif

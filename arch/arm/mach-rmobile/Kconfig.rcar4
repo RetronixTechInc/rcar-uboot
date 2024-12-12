@@ -56,11 +56,18 @@ config TARGET_GRAYHAWK
 	help
 	  Support for Renesas R-Car Gen4 Gray Hawk platform
 
+config TARGET_SBC
+	bool "SBC board"
+	imply R8A779G0
+	help
+	  Support for Renesas R-Car Gen4 SBC platform
+	  
 endchoice
 
 source "board/renesas/falcon/Kconfig"
 source "board/renesas/spider/Kconfig"
 source "board/renesas/whitehawk/Kconfig"
 source "board/renesas/grayhawk/Kconfig"
+source "board/renesas/sbc/Kconfig"
 
 endif
