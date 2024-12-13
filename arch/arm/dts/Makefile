@@ -950,8 +950,8 @@ dtb-$(CONFIG_RCAR_GEN4) += \
 	r8a779a0-falcon-u-boot.dtb \
 	r8a779f0-spider-u-boot.dtb \
 	r8a779g0-whitehawk-u-boot.dtb \
-	r8a779h0-gray-hawk-u-boot.dtb \
-	r8a779h0-sbc-u-boot.dtb
+	r8a779g0-sbc-u-boot.dtb \
+	r8a779h0-gray-hawk-u-boot.dtb
 
 ifdef CONFIG_RCAR_64
 DTC_FLAGS += -R 4 -p 0x1000
