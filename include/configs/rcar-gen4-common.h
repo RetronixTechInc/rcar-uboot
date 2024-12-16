@@ -47,12 +47,30 @@
 
 /* ENV setting */
 
-#define CONFIG_EXTRA_ENV_SETTINGS	\
-	"bootm_size=0x10000000\0"
-
 #define CONFIG_BOOTCOMMAND	\
-	"tftp 0x48080000 Image; " \
-	"tftp 0x48000000 Image-"CONFIG_DEFAULT_FDT_FILE"; " \
-	"booti 0x48080000 - 0x48000000"
+	"run bootcmd_nfs"
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"file_kernel=/boot/Image\0" \
+	"file_dtb=/boot/r8a779g0-raptor.dtb\0" \
+	"loadaddr=0x48080000\0" \
+	"loadaddr_dtb=0x48000000\0" \
+	\
+	"load_kernel=${loadcmd} ${loadaddr} ${file_kernel};${loadcmd} ${loadaddr_dtb} ${file_dtb}\0" \
+	"loadcmd_tftp=setenv loadcmd tftp\0" \
+	"loadcmd_emmc=setenv loadcmd ext4load mmc 0:2\0" \
+	\
+	"ipaddr=192.168.0.20\0" \
+	"serverip=192.168.0.1\0" \
+	"serverfold=/export/rfs\0" \
+	\
+	"cma_size=560M\0" \
+	"pcie_option=pcie_bus_perf\0" \
+	\
+	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused pci=${pcie_option}\0" \
+	"bootcmd_nfs=run bootargs_nfs;run loadcmd_tftp;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0" \
+	\
+	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused pci=${pcie_option}\0" \
+	"bootcmd_emmc=run bootargs_mmc;run loadcmd_emmc;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
