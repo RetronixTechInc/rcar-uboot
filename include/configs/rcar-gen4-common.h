@@ -67,10 +67,10 @@
 	"cma_size=560M\0" \
 	"pcie_option=pci=pcie_bus_perf\0" \
 	\
-	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused ${pcie_option}\0" \
+	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused ${pcie_option} pci=pcie_bus_perf\0"\
 	"bootcmd_nfs=run bootargs_nfs;run loadcmd_tftp;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0" \
 	\
-	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused ${pcie_option}\0" \
+	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused ${pcie_option} pci=pcie_bus_perf\0"\
 	"bootcmd_emmc=run bootargs_mmc;run loadcmd_emmc;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
