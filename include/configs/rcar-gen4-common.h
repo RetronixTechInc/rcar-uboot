@@ -93,10 +93,10 @@
     "ipaddr=192.168.0.20\0" \
     "serverip=192.168.0.1\0" \
     "serverfold=/export/rfs\0" \
-    "bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused\0" \
+    "bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused pci=pcie_bus_perf\0"\
     "load_tftp=setenv loadcmd tftp\0" \
     "bootcmd_nfs=run bootargs_nfs;run load_tftp;run load_kernel;run pcie_check;run dsi_check;booti ${loadaddr} - ${loadaddr_dtb}\0" \
-    "bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused\0" \
+    "bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused pci=pcie_bus_perf\0"\
     "load_emmc=setenv loadcmd ext4load mmc 0:2\0" \
     "bootcmd_emmc=run bootargs_mmc;run load_emmc;run load_kernel;run pcie_check;run dsi_check;booti ${loadaddr} - ${loadaddr_dtb}\0" \
     "cma_size=900M\0"
