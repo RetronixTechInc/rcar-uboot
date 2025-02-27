@@ -51,8 +51,9 @@
 	"run bootcmd_nfs"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
+	"ethaddr=2E:09:0A:06:F0:23\0" \
 	"file_kernel=/boot/Image\0" \
-	"file_dtb=/boot/r8a779g0-raptor.dtb\0" \
+	"file_dtb=/boot/r8a779g0-sbc.dtb\0" \
 	"loadaddr=0x48080000\0" \
 	"loadaddr_dtb=0x48000000\0" \
 	\
