@@ -51,8 +51,25 @@
 	"bootm_size=0x10000000\0"
 
 #define CONFIG_BOOTCOMMAND	\
-	"tftp 0x48080000 Image; " \
-	"tftp 0x48000000 Image-"CONFIG_DEFAULT_FDT_FILE"; " \
-	"booti 0x48080000 - 0x48000000"
+	"run bootcmd_emmc"
+
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"loadaddr=0x48080000\0" \
+	"file_kernel=/boot/Image\0" \
+	"loadaddr_dtb=0x48000000\0" \
+	"file_dtb=/boot/r8a779g0-hel.dtb\0" \
+	"loadaddr_dtbo=0x48060000\0" \
+	\
+	"load_kernel=${loadcmd} ${loadaddr} ${file_kernel};${loadcmd} ${loadaddr_dtb} ${file_dtb}\0" \
+	"ipaddr=192.168.0.20\0" \
+	"serverip=192.168.0.1\0" \
+	"serverfold=/export/rfs\0" \
+	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused\0" \
+	"load_tftp=setenv loadcmd tftp\0" \
+	"bootcmd_nfs=run bootargs_nfs;run load_tftp;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0" \
+	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused\0" \
+	"load_emmc=setenv loadcmd ext4load mmc 0:2\0" \
+	"bootcmd_emmc=run bootargs_mmc;run load_emmc;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0" \
+	"cma_size=900M\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
