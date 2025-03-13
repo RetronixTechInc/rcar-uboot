@@ -62,7 +62,7 @@
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <3300000>;
 		gpios = <&gpio8 13 GPIO_ACTIVE_HIGH>;
-		gpios-states = <1>;
+		gpios-states = <0>;
 		states = <1800000 1>, <3300000 0>;
 	};
 };

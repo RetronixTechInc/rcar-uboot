@@ -48,19 +48,20 @@
 /* ENV setting */
 
 #define CONFIG_BOOTCOMMAND	\
-	"run bootcmd_nfs"
+	"run bootcmd_mmc"
 
 #define CONFIG_EXTRA_ENV_SETTINGS \
-	"ethaddr=2E:09:0A:06:F0:23\0" \
 	"file_kernel=/boot/Image\0" \
 	"file_dtb=/boot/r8a779g0-sbc.dtb\0" \
 	"loadaddr=0x48080000\0" \
 	"loadaddr_dtb=0x48000000\0" \
 	\
+	"locate_storage=mmc dev 0\0" \
 	"load_kernel=${loadcmd} ${loadaddr} ${file_kernel};${loadcmd} ${loadaddr_dtb} ${file_dtb}\0" \
 	"loadcmd_tftp=setenv loadcmd tftp\0" \
-	"loadcmd_emmc=setenv loadcmd ext4load mmc 0:2\0" \
+	"loadcmd_mmc=setenv loadcmd ext4load mmc 0:2\0" \
 	\
+	"ethaddr=2E:09:0A:06:F0:23\0" \
 	"ipaddr=192.168.0.20\0" \
 	"serverip=192.168.0.1\0" \
 	"serverfold=/export/rfs\0" \
@@ -68,10 +69,10 @@
 	"cma_size=560M\0" \
 	"pcie_option=pci=pcie_bus_perf\0" \
 	\
-	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused ${pcie_option} pci=pcie_bus_perf\0"\
+	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused ${pcie_option}\0"\
 	"bootcmd_nfs=run bootargs_nfs;run loadcmd_tftp;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0" \
 	\
-	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused ${pcie_option} pci=pcie_bus_perf\0"\
-	"bootcmd_emmc=run bootargs_mmc;run loadcmd_emmc;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0"
+	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused ${pcie_option}\0"\
+	"bootcmd_mmc=run bootargs_mmc;run loadcmd_mmc;run locate_storage;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
