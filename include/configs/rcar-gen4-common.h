@@ -65,6 +65,7 @@
     "pcie1x4=fdt addr ${loadaddr_dtb};fdt resize 8192;${loadcmd} ${loadaddr_dtbo} ${dtbo_pcie};fdt apply ${loadaddr_dtbo}\0" \
 	\
     "dsi_example=dsi_0=SERDES or DP; dsi_1=SERDES or HDMI; dsi_panel0=10 or 7; dsi_panel1=10 or 7;\0" \
+    "dsi_panel0=10\0" \
     "dsi_mem0_chk=0x4D000000\0" \
     "dsi_mem0_get=0x4D000001\0" \
     "dsi_mem1_chk=0x4D000002\0" \
