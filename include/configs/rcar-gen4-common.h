@@ -55,6 +55,7 @@
 	"file_dtb=/boot/r8a779g0-sbc.dtb\0" \
 	"loadaddr=0x48080000\0" \
 	"loadaddr_dtb=0x48000000\0" \
+	"loadaddr_env=0x48060000\0" \
 	\
 	"locate_storage=mmc dev 0\0" \
 	"load_kernel=${loadcmd} ${loadaddr} ${file_kernel};${loadcmd} ${loadaddr_dtb} ${file_dtb}\0" \
@@ -69,10 +70,22 @@
 	"cma_size=560M\0" \
 	"pcie_option=pci=pcie_bus_perf\0" \
 	\
+	"panel_overlay_env=panel_overlay.env\0" \
+	"panel_env_load=ext4load mmc 0:1 ${loadaddr_env} ${panel_overlay_env}\0" \
+	"panel_env_import=env import -t ${loadaddr_env} ${filesize}\0" \
+	"panel_overlay_script=echo Check panel dtb overlay...; " \
+		"if run panel_env_load; " \
+		"then " \
+			"run panel_env_import; " \
+			"if test -n ${panel_dtbo}; then run load_panel_dtbo; else echo No definition of panel_dtbo; fi; " \
+		"else " \
+			"echo There is no ${panel_overlay_env}; " \
+		"fi;\0" \
+	\
 	"bootargs_nfs=setenv bootargs rw root=/dev/nfs nfsroot=${serverip}:${serverfold},nfsvers=3 ip=dhcp cma=${cma_size},clk_ignore_unused ${pcie_option}\0"\
-	"bootcmd_nfs=run bootargs_nfs;run loadcmd_tftp;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0" \
+	"bootcmd_nfs=run bootargs_nfs;run loadcmd_tftp;run load_kernel;run panel_overlay_script;booti ${loadaddr} - ${loadaddr_dtb}\0" \
 	\
 	"bootargs_mmc=setenv bootargs rw root=/dev/mmcblk0p2 rootfstype=ext4 rootwait cma=${cma_size},clk_ignore_unused ${pcie_option}\0"\
-	"bootcmd_mmc=run bootargs_mmc;run loadcmd_mmc;run locate_storage;run load_kernel;booti ${loadaddr} - ${loadaddr_dtb}\0"
+	"bootcmd_mmc=run bootargs_mmc;run loadcmd_mmc;run locate_storage;run load_kernel;run panel_overlay_script; booti ${loadaddr} - ${loadaddr_dtb}\0"
 
 #endif	/* __RCAR_GEN4_COMMON_H */
