@@ -7,6 +7,7 @@
 
 /dts-v1/;
 #include "r8a779g0-sbc-cpu.dtsi"
+//#define AVB_1V8
 
 / {
 	model = "Renesas SBC board based on r8a779g0";
@@ -29,7 +30,11 @@
 };
 
 &avb0 {
+#ifdef AVB_1V8
+	pinctrl-0 = <&avb0_pins>, <&vddq_eth_pins>;
+#else
 	pinctrl-0 = <&avb0_pins>;
+#endif
 	pinctrl-names = "default";
 	phy-handle = <&phy0>;
 	tx-internal-delay-ps = <2000>;
@@ -56,6 +61,14 @@
 };
 
 &pfc {
+#ifdef AVB_1V8
+	vddq_eth_pins: vddq_eth {
+		pins_pwr {
+			pins = "GP_4_0", "GP_5_0", "GP_6_0","GP_7_0";
+			power-source = <1800>;
+		};
+	};
+#endif
 	avb0_pins: avb0 {
 		mux {
 			groups = "avb0_link", "avb0_mdio", "avb0_rgmii",

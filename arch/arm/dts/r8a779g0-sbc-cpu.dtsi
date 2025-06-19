@@ -10,6 +10,8 @@
 
 #include "r8a779g0.dtsi"
 #define SD_CARD_SUPPORT
+//#define PCBA_V1p0
+
 / {
 	model = "Renesas SBC CPU part";
 	compatible = "renesas,sbc-cpu", "renesas,r8a779g0";
@@ -62,8 +64,13 @@
 		regulator-min-microvolt = <1800000>;
 		regulator-max-microvolt = <3300000>;
 		gpios = <&gpio8 13 GPIO_ACTIVE_HIGH>;
+#ifdef PCBA_V1p0
 		gpios-states = <0>;
 		states = <1800000 1>, <3300000 0>;
+#else
+		gpios-states = <0>;
+		states = <1800000 0>, <3300000 1>;
+#endif
 	};
 };
 
