@@ -7,7 +7,7 @@
 
 /dts-v1/;
 #include "r8a779g0-sbc-cpu.dtsi"
-//#define AVB_1V8
+#define AVB_1V8
 
 / {
 	model = "Renesas SBC board based on r8a779g0";
