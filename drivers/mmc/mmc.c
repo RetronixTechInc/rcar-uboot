@@ -672,6 +672,8 @@ static int sd_send_op_cond(struct mmc *mmc, bool uhs_en)
 	}
 
 	mmc->ocr = cmd.response[0];
+	if (mmc->signal_voltage == MMC_SIGNAL_VOLTAGE_180)
+		mmc->ocr |= OCR_S18R;
 
 #if CONFIG_IS_ENABLED(MMC_UHS_SUPPORT)
 	if (uhs_en && !(mmc_host_is_spi(mmc)) && (cmd.response[0] & 0x41000000)
@@ -2726,13 +2728,15 @@ static void mmc_set_initial_state(struct mmc *mmc)
 {
 	int err;
 
-	/* First try to set 3.3V. If it fails set to 1.8V */
-	err = mmc_set_signal_voltage(mmc, MMC_SIGNAL_VOLTAGE_330);
-	if (err != 0)
-		err = mmc_set_signal_voltage(mmc, MMC_SIGNAL_VOLTAGE_180);
-	if (err != 0)
-		pr_warn("mmc: failed to set signal voltage\n");
-
+	if (mmc->signal_voltage == MMC_SIGNAL_VOLTAGE_000)
+	{
+		/* First try to set 3.3V. If it fails set to 1.8V */
+		err = mmc_set_signal_voltage(mmc, MMC_SIGNAL_VOLTAGE_330);
+		if (err != 0)
+			err = mmc_set_signal_voltage(mmc, MMC_SIGNAL_VOLTAGE_180);
+		if (err != 0)
+			pr_warn("mmc: failed to set signal voltage\n");
+	}
 	mmc_select_mode(mmc, MMC_LEGACY);
 	mmc_set_bus_width(mmc, 1);
 	mmc_set_clock(mmc, 0, MMC_CLK_ENABLE);
