@@ -3669,6 +3669,7 @@ static int spi_nor_init(struct spi_nor *nor)
 	if (nor->addr_width == 4 &&
 	    !(nor->info->flags & SPI_NOR_OCTAL_DTR_READ) &&
 	    (JEDEC_MFR(nor->info) != SNOR_MFR_SPANSION) &&
+	    (JEDEC_MFR(nor->info) != SNOR_MFR_WINBOND) &&
 	    !(nor->info->flags & SPI_NOR_4B_OPCODES)) {
 		/*
 		 * If the RESET# pin isn't hooked up properly, or the system
@@ -3708,7 +3709,7 @@ static int spi_nor_soft_reset(struct spi_nor *nor)
 			SPI_MEM_OP_NO_DUMMY,
 			SPI_MEM_OP_NO_ADDR,
 			SPI_MEM_OP_NO_DATA);
-	spi_nor_setup_op(nor, &op, SNOR_PROTO_8_8_8_DTR);
+	spi_nor_setup_op(nor, &op, SNOR_PROTO_1_1_1);//SNOR_PROTO_8_8_8_DTR);
 	ret = spi_mem_exec_op(nor->spi, &op);
 	if (ret) {
 		dev_warn(nor->dev, "Software reset enable failed: %d\n", ret);
@@ -3719,7 +3720,7 @@ static int spi_nor_soft_reset(struct spi_nor *nor)
 			SPI_MEM_OP_NO_DUMMY,
 			SPI_MEM_OP_NO_ADDR,
 			SPI_MEM_OP_NO_DATA);
-	spi_nor_setup_op(nor, &op, SNOR_PROTO_8_8_8_DTR);
+	spi_nor_setup_op(nor, &op, SNOR_PROTO_1_1_1);//SNOR_PROTO_8_8_8_DTR);
 	ret = spi_mem_exec_op(nor->spi, &op);
 	if (ret) {
 		dev_warn(nor->dev, "Software reset failed: %d\n", ret);
@@ -3934,6 +3935,7 @@ int spi_nor_scan(struct spi_nor *nor)
 		/* enable 4-byte addressing if the device exceeds 16MiB */
 		nor->addr_width = 4;
 		if (JEDEC_MFR(info) == SNOR_MFR_SPANSION ||
+			JEDEC_MFR(info) == SNOR_MFR_WINBOND ||
 		    info->flags & SPI_NOR_4B_OPCODES)
 			spi_nor_set_4byte_opcodes(nor, info);
 #else
