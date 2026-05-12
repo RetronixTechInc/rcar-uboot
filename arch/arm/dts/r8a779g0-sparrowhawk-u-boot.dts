@@ -33,7 +33,7 @@
 	spi-flash@0 {
 		#address-cells = <1>;
 		#size-cells = <1>;
-		compatible = "s25fs512s", "jedec,spi-nor";
+		compatible = "jedec,spi-nor";
 		reg = <0>;
 		spi-tx-bus-width = <1>;
 		spi-rx-bus-width = <1>;
