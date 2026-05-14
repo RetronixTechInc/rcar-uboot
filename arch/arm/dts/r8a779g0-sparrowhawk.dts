@@ -83,6 +83,10 @@
 			drive-strength = <21>;
 		};
 
+		pins-vddq18-25-avb {
+			pins = "GP_4_0", "GP_5_0", "GP_6_0", "GP_7_0";
+			power-source = <1800>;
+		};
 	};
 };
 
