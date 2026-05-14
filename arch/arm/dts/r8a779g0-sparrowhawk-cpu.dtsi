@@ -169,12 +169,12 @@
 #endif
 
 	scif0_pins: scif0 {
-		groups = "scif0_data", "scif0_ctrl", "scif0_clk";
+		groups = "scif0_data", "scif0_ctrl";
 		function = "scif0";
 	};
 
 	hscif0_pins: hscif0 {
-		groups = "hscif0_data", "hscif0_ctrl", "hscif0_clk";
+		groups = "hscif0_data", "hscif0_ctrl";
 		function = "hscif0";
 	};
 

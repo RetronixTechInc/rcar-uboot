@@ -85,3 +85,12 @@
 
 	};
 };
+
+&gpio1 {
+	pwm-fan-hog {
+		gpio-hog;
+		gpios = <15 GPIO_ACTIVE_HIGH>;
+		output-high;
+		line-name = "PWM-FAN";
+	};
+};
